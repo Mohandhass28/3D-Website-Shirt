@@ -21,6 +21,11 @@ const Customizer = () => {
   const [file, setFile] = useState("");
   const [activeEditorTab, setActiveEditorTab] = useState("");
 
+  const [activeFilterTab, setActiveFilterTab] = useState({
+    logoShirt: true,
+    stylishShirt: false,
+  })
+
   const generateTabContent = () => {
     switch (activeEditorTab) {
       case "colorpicker":
@@ -31,7 +36,7 @@ const Customizer = () => {
         return null;
     }
   };
-  
+
   const readFile = (type) => {
     reader(file).then((result) => {
       handleDecals(type, result);
@@ -44,6 +49,31 @@ const Customizer = () => {
 
     state[decalType.stateProperty] = result;
   };
+
+
+  const handleActiveFilterTab = (tabName) => {
+    switch (tabName) {
+      case "logoShirt":
+          state.isLogoTexture = !activeFilterTab[tabName];
+        break;
+      case "stylishShirt":
+          state.isFullTexture = !activeFilterTab[tabName];
+        break;
+      default:
+        state.isLogoTexture = true;
+        state.isFullTexture = false;
+        break;
+    }
+
+    // after setting the state, activeFilterTab is updated
+
+    setActiveFilterTab((prevState) => {
+      return {
+        ...prevState,
+        [tabName]: !prevState[tabName]
+      }
+    })
+  }
 
   return (
     <AnimatePresence>
@@ -82,6 +112,21 @@ const Customizer = () => {
               customStyles="w-fit px-4 py-2.5 font-bold text-sm"
             />
           </motion.div>
+
+          <motion.div
+              className="filtertabs-container"
+              {...slideAnimation("up")}
+            >
+              {FilterTabs.map((tab) => (
+                <Tab
+                  key={tab.name}
+                  tab={tab}
+                  isFilterTab
+                  isActiveTab={activeFilterTab[tab.name]}
+                  handleClick={() => handleActiveFilterTab(tab.name)}
+                />
+              ))}
+            </motion.div>
         </>
       )}
     </AnimatePresence>
